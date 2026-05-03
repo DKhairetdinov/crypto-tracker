@@ -1,7 +1,7 @@
 export interface CryptoProperties {
   id: number;
   name: string;
-  symbol: symbol;
+  symbol: string;
   slug: string;
   circulating_supply: number;
   price: number;

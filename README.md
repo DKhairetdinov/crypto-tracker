@@ -9,6 +9,7 @@
 *   **React**
 *   **TypeScript**
 *   **Papaparse**
+*   **Axios**
 
 ## Запуск
   ```bash
