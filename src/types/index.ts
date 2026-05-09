@@ -1,9 +1,9 @@
 export interface CryptoProperties {
-  id: number;
+  id: number; 
   name: string;
   symbol: string;
   slug: string;
-  circulating_supply: number;
-  price: number;
-  market_cap: number;
+  circulating_supply: string | number;
+  price: string | number;
+  market_cap: string | number;
 }

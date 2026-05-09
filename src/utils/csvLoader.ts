@@ -1,6 +1,5 @@
 import Papa  from "papaparse";
 import type { CryptoProperties } from "../types";
-
 export const getLocalCsvData = async (): Promise<CryptoProperties[]> => {
   const response = await fetch('./public/currencies26.csv');
   const csvText = await response.text();
@@ -10,8 +9,8 @@ export const getLocalCsvData = async (): Promise<CryptoProperties[]> => {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          const mappedData: CryptoProperties[] =  results.data.map((row: any) =>{
-            const paeseNum = (val: string) => {
+          const mappedData: CryptoProperties[] = results.data.map((row: any) =>{
+            const parseNum = (val: string) => {
               if(!val) return 0;
               return parseFloat(val.toString().replace(',', '.'));
             };
@@ -21,9 +20,9 @@ export const getLocalCsvData = async (): Promise<CryptoProperties[]> => {
               name: row['data.name'],
               symbol: row['data.symbol'],
               slug: row['data.slug'],
-              circulating_supply: paeseNum(row['data.circulating_supply']),
-              price: paeseNum(row['data.quote.USD.price']),
-              market_cap: paeseNum(row['data.quote.USD.market_cap']),
+              circulating_supply: parseNum(row['data.circulating_supply']),
+              price: parseNum(row['data.quote.USD.price']),
+              market_cap: parseNum(row['data.quote.USD.market_cap']),
             };
           });
           resolve(mappedData);

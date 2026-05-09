@@ -1,73 +1,87 @@
 import { useEffect, useState, useMemo } from 'react';
-import type { CryptoProperties } from './types/';
 import { getLocalCsvData } from './utils/csvLoader';
+import styles from './App.module.css';
+import type { CryptoProperties } from './types';
 
 function App() {
   const [cryptos, setCryptos] = useState<CryptoProperties[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    getLocalCsvData().then(data => {
+  const loadCsv = async () => {
+    setLoading(true);
+    const data = await getLocalCsvData();
+    setCryptos(data);
+    setLoading(false);
+  };
+
+  const fetchLive = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('http://localhost:3001/api/scrape');
+      const data = await res.json();
       setCryptos(data);
-      setLoading(false);
-    });
-  }, []);
+    } catch (e) {
+      alert("Запусти сервер (node server.js)");
+    }
+    setLoading(false);
+  };
 
-  const filteredCryptos = useMemo(() => {
-    return cryptos.filter(coin => 
-      coin.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  useEffect(() => { loadCsv(); }, []);
+
+  const filtered = useMemo(() => {
+    return cryptos.filter(c => c.name?.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [cryptos, searchTerm]);
 
-  if (loading) return <div className="p-10">Загрузка данных...</div>;
-
   return (
-    <div>
-      <h1>Crypto Tracker</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Crypto Tracker</h1>
       
-      <div style={{ marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="Поиск по названию (например, Bitcoin)..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-
-        />
+      <div className={styles.controls}>
+        <button onClick={loadCsv} className={`${styles.btn} ${styles.btnPrimary}`}>CSV</button>
+        <button onClick={fetchLive} className={`${styles.btn} ${styles.btnPrimary}`}>CoinMarketCap</button>
       </div>
 
-      <table>
+      <input 
+        className={styles.sear}
+        type="text" 
+        placeholder="Поиск..." 
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
+      <table className={styles.table}>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>#</th>
             <th>Название</th>
-            <th>Цена (USD)</th>
+            <th>Цена</th>
+            <th>Доступно монет</th>
             <th>Капитализация</th>
           </tr>
         </thead>
         <tbody>
-          {filteredCryptos.map(coin => (
-            <tr key={coin.id}>
-              <td>{coin.id}</td>
+          {filtered.map((c) => (
+            <tr key={c.id}>
+              <td>{c.id}</td>
               <td>
-                <strong>{coin.name}</strong> <span>{coin.symbol}</span>
+                <strong>{c.name}</strong> <small className="text-gray-400">{c.symbol}</small>
               </td>
+              <td className={styles.price}>
+                {typeof c.price === 'number' 
+                  ? `$${c.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}` 
+                  : c.price}
+              </td>
+              <td>{c.circulating_supply}</td>
               <td>
-                ${coin.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                {typeof c.market_cap === 'number'
+                  ? `$${(c.market_cap / 1e9).toFixed(2)} млрд`
+                  : c.market_cap}
               </td>
-              <td>
-                ${(coin.market_cap / 1_000_000_000).toFixed(2)} млрд
-              </td>
+              
             </tr>
           ))}
         </tbody>
       </table>
-
-      {filteredCryptos.length === 0 && (
-        <p style={{ textAlign: 'center', marginTop: '20px', color: '#666' }}>
-          Криптовалюта "{searchTerm}" не найдена.
-        </p>
-      )}
     </div>
   );
 }

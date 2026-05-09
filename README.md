@@ -6,15 +6,43 @@
 Приложение реализует ввод, хранение и обработку данных о криптовалютах. Данные беруться из локального CSV-файла и путем парсинга сайта `coinmarketcap.com`.
 
 ## Стек технологий
-*   **React**
-*   **TypeScript**
-*   **Papaparse**
-*   **Axios**
+### Frontend:
+- **React** + **Vite**
+- **TypeScript** (Типизация данных)
+- **Papaparse** (Обработка CSV данных)
+- **CSS Modules** (Стили)
 
-## Запуск
-  ```bash
-    git clone https://github.com/DKhairetdinov/crypto-tracker
-    
-    npm install
+### Backend:
+- **Node.js** + **Express**
+- **Axios** (Загрузка HTML-кода страницы)
+- **Cheerio** (Парисинг DOM-дерева)
+- **Cors** (Настройка кросс-доменных запросов)
 
-    npm run dev
+## Структура проекта
+- **server.js** - бэкенд-парсинг и API.
+- **src/App.tsx** - основная логика фронтенда и интерфейс.
+- **src/App.modules.css** - стили.
+- **src/utils/csvLoader.ts** - логика обработки CSV файла.
+- **src/types/index/ts** - описание интерфейсов данных.
+- **public/currencies26.csv** - локальная БД.
+
+## Клонирование и установка зависимостей
+```
+git clone https://github.com/DKhairetdinov/crypto-tracker    
+npm install
+```
+## Запуск (два терминала)
+1. Запуск Backend-сервера
+```
+node server.js
+```
+2. Запуск Frontend-приложения
+```
+npm run dev
+```
+Доступно по адресу `http://localhost:5173`
+
+## Автор
+**Студент:** Хайретдинов Данил Дмитриевич
+
+**Группа:** ИП-413
